@@ -1,0 +1,28 @@
+wsl 20.04 version에서 실행
+
+1. Kaggle Token을 받는다 
+- kaggle의 account계정에서 create new api token을 다운 받는다 
+
+2. wsl에서 kaggle를 설치해준다
+- pip3 install kaggle
+
+
+3. kaggle Token을 받은 장소로 디렉토리를 변경해준다
+- /mnt/c/Users/yunaj/Downloads
+
+4. 좀 더 효율적 관리를 위해 폴더를 따로 만들어 api token(kaggle.json)을 옮긴다 
+
+- mkdir -p ~/.kaggle && mv kaggle.json ~/.kaggle/kaggle.json
+
+5. 원하는 데이터를 다운받기 전에 권한을 나만 볼 수 있도록 해준다
+ -  chmod 600 ~/.kaggle/kaggle.json
+
+
+6. 원하는 데이터 다운받기 (movie data를 다운받았다) 
+-  Copy API command에서 API를 copy해서 다운받는다
+- kaggle datasets download -d rounakbanik/the-movies-dataset
+
+
+7. 압축 풀기 
+sudo apt install unzip # 압축풀기 전에 unzip install 해주기 
+unzip the-movies-dataset.zip
