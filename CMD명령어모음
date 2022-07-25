@@ -1,0 +1,18 @@
+> 
+### 폴더를 만들고(mkdir) 그 안에 파일을 만든 후(copy con 파일명) 글 을써보자 
+
+```
+C:\>cd RestaurantsMap
+
+C:\RestaurantsMap>mkdir Server
+
+C:\RestaurantsMap>cd Server
+
+C:\RestaurantsMap\Server>copy con client-server.txt  # ctrl+c를 누르면 된당
+서버 = 클라이언트 요청에 응답
+        1개 파일이 복사되었습니다.
+
+C:\RestaurantsMap\Server>type client-server.txt
+서버 = 클라이언트 요청에 응답
+
+```
