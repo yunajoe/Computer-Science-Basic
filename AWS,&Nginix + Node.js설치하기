@@ -1,0 +1,217 @@
+## 1. AWS에 회원가입후 EC2 인스턴스를 하나 만든다. 
+=> AWS에서 서버 컴퓨터를 하나 빌렸다!
+=> 이제 이 컴퓨터에서 우리가 필요한 프로그램들을 설치하고, 
+서버로 이용하는 것이다. 
+
+## 2. AWS에 접근할 수 있는 tool들을 설치해주자 
+1. Putty 
+2. WinSCP
+
+
+1. Putty
+```
+AWS 서버에 SSH프로토콜, 즉 터미널로 접근할 수 있게 해 주는 프로그램
+SSH(Secure Shell), Telnet, TCP 접속을 위한 클라이언트
+일반적으로 Window환경의 호스트 운영체제에서 다른 운영체제에 CLI(Command Line Interface)환경의 SSH 접속
+putty 실행파일을 더블클릭하면은!
+
+```
+
+2. WinSCP
+```
+AWS 서버에 FTP프로토콜로 접근할 수 있게 해 주는 프로그램
+```
+
+
+cf. ##  크롬-> 네이버로 가는법?!
+```
+크롬이라는 브라우저를 이용하여, 네이버에 http 또는 https접근을 했기 때문이당
+```
+## 3.WinScp와 putty를 연결해주자 
+톱니바퀴모양(설정)을 눌러서 설정 환경을 열어주고, 
+통합-> 프로그램
+
+```
+EC2(인스턴스), 빌린 컴퓨터, 에 접근하기 위해서는 
+퍼블릭 아이피에 접근하여야 한다. 그런데, 이 IP는 변동되는 IP라서 
+네트워크 및 보안에 있는 탄력적 IP를 이용해보자 
+```
+
+
+
+
+![](https://velog.velcdn.com/images/yunaaa/post/436e3473-030b-44c0-a691-b815d84c646e/image.jpg)
+
+
+작업에서 탄력적 IP주소 연결을 누르자 
+
+![](https://velog.velcdn.com/images/yunaaa/post/37a6d378-1410-42b3-a719-048119181882/image.jpg)
+
+
+인스턴스에 해당 인스턴스를 선택하고 연결하면은, 
+컴퓨터를 껐다 켜더라도 퍼블릭 IPv는 이제 고정IP이기 때문에 절대 변하지 않게 된다. 
+
+
+![](https://velog.velcdn.com/images/yunaaa/post/7d71216d-383e-4d99-a07d-6e05f6f5d7d3/image.jpg)
+
+
+
+![](https://velog.velcdn.com/images/yunaaa/post/92060171-4db0-49c8-ab26-de5be6cda32b/image.jpg)
+
+
+비밀번호는 인스턴스다운을 할때 받은 키를 넣어준다.
+비밀번호 아래 있는 고급탭을 눌러서 
+SSH => 인증 ==> 개인기 파일(k) 
+
+![](https://velog.velcdn.com/images/yunaaa/post/d5d1f838-fa6b-4b4c-8210-3b06436e2987/image.jpg)
+
+
+로그인 성공! 
+
+
+![](https://velog.velcdn.com/images/yunaaa/post/687fe503-9c9c-464a-98eb-39f53d289a72/image.jpg)
+
+왼쪽이 내 컴퓨터 구조 
+오른쪽이 빌린 컴퓨터(AWS의 EC2)의 구조 
+==> 빌린 컴퓨터에 접근하려면은 터미널로 접근을 해야한다 
+
+
+![](https://velog.velcdn.com/images/yunaaa/post/1c829795-22ab-477f-8688-2c4d4fa07856/image.jpg)
+
+=============================================================
+## 4.이제 필요한 프로그램들을 설치해보자
+
+
+
+```
+# 관리자 계정으로 전환해주기 
+ubuntu@ip-172-31-10-141:~$ sudo su
+root@ip-172-31-10-141:/home/ubuntu
+
+
+# 운영체제에서 사용 가능한 패키지들과 그 버전에 대한 정보를 업데이트하는 명령어
+root@ip-172-31-10-141:/home/ubuntu# apt-get update
+
+
+# nginx로 인스톨해주깅 
+root@ip-172-31-10-141:/home/ubuntu# apt-get install nginx
+
+
+# 설치해주고 퍼블릿 IPv4주소를 웹 브라우저에 띄어보자
+==> 안됨 
+==> 왜냐하면은 port가 아직 안 열렸기 떄문이다 
+
+
+
+# port를 열어보자 
+1. AWS를 이용
+-> 보안탭의 보안그룹을 클릭!-> 인바운드 규칙 편집->규칙추가 
+유형의 HTTP, 소스에 AnyWhere Iv4! 를 저장하면은 된당..
+
+
+2. 터미널을 이용 
+유형 HTTP 
+프로토콜 TCP 
+포트 범위 80 
+소스  AnyWhere Iv4
+
+```
+
+
+
+
+```
+2번, 터미널 방법을 이용하여 여러 port를 열려고 시도하는중..
+
+## 포트가 이미 사용 중이 아닌지 확인
+root@ip-172-31-10-141:/home/ubuntu# netstat -na | grep :80
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN
+tcp6       0      0 :::80       
+
+
+## 포트를 열어보쟈 
+시도1
+root@ip-172-31-10-141:/home/ubuntu# sudo ufw allow 80
+Rules updated
+Rules updated (v6)
+root@ip-172-31-10-141:/home/ubuntu#
+안됨
+
+시도2
+root@ip-172-31-10-141:/home/ubuntu# ufw allow proto tcp to 0.0.0.0/0 port 80
+Rules updated
+안됨  
+
+```
+1번, AWS에서 인바운드 규칙 편집으로 함
+![](https://velog.velcdn.com/images/yunaaa/post/6020fa21-f68c-4a33-8d6f-40269e4021ea/image.jpg)
+
+## Node.js설치하기 
+
+```
+
+
+## root 계정으로 전환 
+
+
+ubuntu@ip-172-31-10-141:~$ su root
+Password:
+su: Authentication failure
+
+우분투는 root 로그인 자체를 막아 놨으므로 root 계정 암호가 설정돼 있지 않다. root 계정으로 로그인하려면 root 계정 암호를 설정해야 한다.
+
+cf.
+1. su (Switch User) 명령어 
+- 현재 계정을 로그아웃하지 않고 다른 계정으로 전환하는 명령어 
+ex) su root,  su - root 
+
+su 와 su - 는 둘 다 루트 (root) 계정으로 전환하는 것을 의미
+su는 root 계정의 환경 변수를 가져오지 않고, 현재 계정의 환경 변수를 사용하게 되는 차이점
+su - 하시고 로그인을 하게 되면 기본 /root 디렉토리(directory)로 이동
+
+
+2. sudo (SuperUserDO) 명령어 
+
+- 현재 계정에서 단순히 root 의 권한 만을 빌리는 것
+
+- sudo 명렁어를 실행하게 되면 root 권한으로 명령어를 실행
+
+-  하나의 명령에 대하여 일시적으로 root 권한을 사용
+
+3. su 와 sudo 의 차이점
+- su는 계정을 전환하기 위한 것이고,
+- sudo는 권한을 빌려 명령어를 실행하기 위한 것
+
+
+
+ubuntu@ip-172-31-10-141:~$ sudo su
+root@ip-172-31-10-141:/home/ubuntu# apt-get install nodejs
+
+
+root@ip-172-31-10-141:/home/ubuntu# node -v
+v8.10.0
+
+```   
+
+## 버전을 업그레이드 시켜보자 
+```
+curl -sL https://deb.nodesource.com/setup_14.x -o nodesource_14_setup.sh
+sudo bash nodesource_setup.sh
+bash: nodesource_setup.shbash: No such file or directory
+(No such file이 나온다) 
+--> bash nodesource한 다음에 tap을 누르면 아래와 같이 됨
+root@ip-172-31-10-141:/home/ubuntu# bash nodesource_14_setup.sh
+
+
+root@ip-172-31-10-141:/home/ubuntu# apt-get install nodejs
+```
+## 버전확인 
+
+```
+root@ip-172-31-10-141:/home/ubuntu# node -v
+v14.20.0
+root@ip-172-31-10-141:/home/ubuntu# npm -v
+6.14.17  
+```
+
+## 출처 : https://gxnzi.tistory.com/75
