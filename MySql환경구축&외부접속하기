@@ -1,0 +1,83 @@
+## mysql 설치하기
+```  
+apt-get install mysql-server-y 
+```
+## mysql 접속하기 
+```
+ mysql -u root -p
+
+```
+
+##  root계정 비밀번호 설정해주기 
+``` 
+mysql>  alter user 'root'@'localhost' identified with mysql_native_password by '1234'
+alter user 'root'@'localhost' identified with mysql_native_password by '1234'
+ ```
+===============================================
+
+# 이제 local 에서도 AWS의 EC2 접속을 할 수 있도록(외부접속)해보자 
+
+## 모든 IP에 권한주기
+
+```
+mysql> grant all privileges on *.*to 'root'@'%'identified by '1234';
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+```  
+
+
+## 권한변경을 저장하기
+```
+mysql> flush privileges;
+Query OK, 0 rows affected (0.00 sec)
+```
+
+## mysql를 나와서 mysql 설정파일에 들어가보자
+
+```
+/etc/mysq/mysql.conf.d/mysqld.cnf
+
+i를 눌러서 편집기 모드로 전환하고, 
+bind address: - 127.0.0.1 ==> local host만 접근하게 함 
+이것을 주석처리를 하면 모든host에게 url 개방
+esc를 누르고 :wq! 하면은 저장하고 나감  
+
+이때! 
+
+E212: Can't open file for writing ==> 요 에러뜸, root가 아닌 계정으로 했기때문
+(권한이 없기 때문에 뜬 오류) 
+아래 출처 블로그와 똑같이 따라했더니 해결!
+출처: https://iamrealizer.tistory.com/47
+``` 
+![](https://velog.velcdn.com/images/yunaaa/post/b29708fc-1598-4443-9b9e-066e139e7d0f/image.jpg)
+
+
+## mysql 재시작하기 
+```
+service mysql restart 
+```
+
+
+## mysql workbench 다운받기 
+
+```
+Hostname: AWS에서 빌린 인스턴스의 IP주소 
+Username: root 
+```
+## 처음에 disconnect을 못한다. 왜냐하면은 port를 열어주지 않았기 때문!
+```
+==> aws에서 port 열고  다시 한번 connection 하면은! 이젠 conneciton된다 
+```
+## 여태까지 AWS에서 인바운드 규칙을 한 결과 
+![](https://velog.velcdn.com/images/yunaaa/post/bfd01895-172a-4e65-9838-1c5f7bf05689/image.jpg)
+
+
+
+이제 localhost에서도 AWS의 EC2 서버에 접속을 할 수 있게 되었다!![](https://velog.velcdn.com/images/yunaaa/post/829acf36-7251-4171-aca0-4802905e6535/image.jpg)
+
+
+
+## 출처
+인프런강의 >> 비전공자를 위한 풀스택 맛집지도 만들기 프로젝트!: Front, Back-end 그리고 배포까지
+
+
+
